@@ -1,0 +1,8 @@
+{
+  "name": " เว็บโรงเรียนสมบูรณ์",
+  "description": "A modern, professional school portal with a comprehensive admin dashboard for Wat Samakkhi Tham School, featuring dynamic content management and responsive design.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

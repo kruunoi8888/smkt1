@@ -1,0 +1,164 @@
+/* Rich Text Content Styling */
+.rich-text-content h1 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 900;
+  margin-bottom: 1.5rem;
+  margin-top: 2rem;
+  color: #0f172a;
+}
+
+@media (min-width: 768px) {
+  .rich-text-content h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+.rich-text-content h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+  color: #1e293b;
+}
+
+@media (min-width: 768px) {
+  .rich-text-content h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+.rich-text-content h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  margin-top: 1.25rem;
+  color: #1e293b;
+}
+
+@media (min-width: 768px) {
+  .rich-text-content h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
+.rich-text-content p {
+  margin-bottom: 1rem;
+  line-height: 1.625;
+}
+
+.rich-text-content ul {
+  list-style-type: disc;
+  list-style-position: inside;
+  margin-bottom: 1rem;
+}
+
+.rich-text-content ul > * + * {
+  margin-top: 0.5rem;
+}
+
+.rich-text-content ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+  margin-bottom: 1rem;
+}
+
+.rich-text-content ol > * + * {
+  margin-top: 0.5rem;
+}
+
+.rich-text-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.rich-text-content a:hover {
+  color: #1e40af;
+}
+
+.rich-text-content blockquote {
+  border-left-width: 4px;
+  border-color: #e2e8f0;
+  padding-left: 1rem;
+  font-style: italic;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: #475569;
+}
+
+/* Quill Alignment & Image Styles */
+.rich-text-content .ql-align-center {
+  text-align: center;
+}
+
+.rich-text-content .ql-align-right {
+  text-align: right;
+}
+
+.rich-text-content .ql-align-justify {
+  text-align: justify;
+}
+
+.rich-text-content img {
+  max-width: 100%;
+  border-radius: 1rem;
+  margin: 1.5rem auto;
+  display: block;
+}
+
+.rich-text-content .ql-size-small {
+  font-size: 0.75em;
+}
+
+.rich-text-content .ql-size-large {
+  font-size: 1.5em;
+}
+
+.rich-text-content .ql-size-huge {
+  font-size: 2.5em;
+}
+
+/* Quill Editor Overrides */
+.ql-container.ql-snow {
+  border: none !important;
+  font-family: 'Sarabun', sans-serif !important;
+}
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background: white;
+  padding: 12px !important;
+}
+
+.ql-editor {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  padding: 20px !important;
+}
+
+.ql-editor.ql-blank::before {
+  font-style: normal !important;
+  color: #94a3b8 !important;
+  left: 20px !important;
+}
+
+/* Widget Container Styles */
+.widget-content-container iframe {
+  max-width: 100%;
+  border-radius: 0.75rem;
+}
+
+/* Scrollbar Utilities */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
