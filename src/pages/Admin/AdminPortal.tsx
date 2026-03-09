@@ -374,40 +374,37 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
     return dateStr;
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (isSaving) return;
     setIsSaving(true);
-    try {
-      // Parallelize config, menus, and admin users updates
-      const promises = [
-        saveData('config', { ...bufferedConfig, id: 1 })
-      ];
 
-      // Save menus
-      for (const menu of bufferedMenus) {
-        promises.push(saveData('menus', menu));
-      }
-      
-      // Save admin users
-      for (const user of bufferedAdminUsers) {
-        promises.push(saveData('admin_users', user));
-      }
+    // Update UI immediately (optimistic UI)
+    setConfig(bufferedConfig);
+    setAdminUsers(bufferedAdminUsers);
+    setMenus(bufferedMenus);
+    setSaveSuccess(true);
+    setTimeout(() => {
+      setSaveSuccess(false);
+      setIsSaving(false);
+    }, 2000);
 
-      await Promise.all(promises);
+    // Perform data saving asynchronously
+    const promises = [
+      saveData('config', { ...bufferedConfig, id: 1 })
+    ];
 
-      setConfig(bufferedConfig);
-      setAdminUsers(bufferedAdminUsers);
-      setMenus(bufferedMenus);
-      setSaveSuccess(true);
-      setTimeout(() => {
-        setSaveSuccess(false);
-      }, 3000);
-    } catch (error: any) {
+    for (const menu of bufferedMenus) {
+      promises.push(saveData('menus', menu));
+    }
+    
+    for (const user of bufferedAdminUsers) {
+      promises.push(saveData('admin_users', user));
+    }
+
+    Promise.all(promises).catch((error: any) => {
       console.error("Failed to save config:", error);
       alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล\n\nรายละเอียด: " + (error?.message || error?.details || JSON.stringify(error)));
-    } finally {
-      setIsSaving(false);
-    }
+    });
   };
 
   const handleAdminAction = async (type: 'edit' | 'delete', id: string) => {
@@ -1699,7 +1696,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   <InputGroup label="คำอธิบาย (Description)" value={editingSlide.description || ''} onChange={v => setEditingSlide({ ...editingSlide, description: v })} isTextArea />
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={async () => { 
+                   <button onClick={() => { 
                      const newSlides = editingSlide.id.startsWith('new_') 
                        ? [editingSlide, ...(bufferedConfig.slides || [])]
                        : (bufferedConfig.slides || []).map((s: any) => s.id === editingSlide.id ? editingSlide : s);
@@ -1708,14 +1705,13 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                      setBufferedConfig(newConfig);
                      setConfig(newConfig);
                      
-                     try {
-                       await saveData('config', { ...newConfig, id: 1 });
-                       setEditingSlide(null);
-                       setSaveSuccess(true);
-                       setTimeout(() => setSaveSuccess(false), 2000);
-                     } catch (error) {
+                     setEditingSlide(null);
+                     setSaveSuccess(true);
+                     setTimeout(() => setSaveSuccess(false), 2000);
+
+                     saveData('config', { ...newConfig, id: 1 }).catch(error => {
                        console.error("Failed to save slide:", error);
-                     }
+                     });
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
@@ -1792,11 +1788,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={async () => { 
-                     try {
-                       await saveData('news', editingNews);
+                   <button onClick={() => { 
                        const newNewsList = editingNews.id.startsWith('new_') 
-                         ? [...news, editingNews]
+                         ? [editingNews, ...news]
                          : news.map((n: any) => n.id === editingNews.id ? editingNews : n);
                        
                        // Sort by date descending
@@ -1806,9 +1800,10 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                        setEditingNews(null);
                        setSaveSuccess(true);
                        setTimeout(() => setSaveSuccess(false), 2000);
-                     } catch (error) {
-                       console.error("Failed to save news:", error);
-                     }
+
+                       saveData('news', editingNews).catch(error => {
+                         console.error("Failed to save news:", error);
+                       });
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
@@ -1885,11 +1880,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={async () => { 
-                     try {
-                       await saveData('achievements', editingAchievement);
+                   <button onClick={() => { 
                        const newAchievementList = editingAchievement.id.startsWith('new_') 
-                         ? [...achievements, editingAchievement]
+                         ? [editingAchievement, ...achievements]
                          : achievements.map(a => a.id === editingAchievement.id ? editingAchievement : a);
                        
                        // Sort by date descending
@@ -1899,9 +1892,10 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                        setEditingAchievement(null);
                        setSaveSuccess(true);
                        setTimeout(() => setSaveSuccess(false), 2000);
-                     } catch (error) {
-                       console.error("Failed to save achievement:", error);
-                     }
+
+                       saveData('achievements', editingAchievement).catch(error => {
+                         console.error("Failed to save achievement:", error);
+                       });
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
@@ -1947,11 +1941,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end shrink-0">
-                   <button onClick={async () => { 
-                     try {
-                       await saveData('journals', editingJournal);
+                   <button onClick={() => { 
                        const newJournalList = editingJournal.id.startsWith('new_') 
-                         ? [...journals, editingJournal]
+                         ? [editingJournal, ...journals]
                          : journals.map(j => j.id === editingJournal.id ? editingJournal : j);
                        
                        // Sort by date descending
@@ -1965,9 +1957,10 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                        setEditingJournal(null);
                        setSaveSuccess(true);
                        setTimeout(() => setSaveSuccess(false), 2000);
-                     } catch (error) {
-                       console.error("Failed to save journal:", error);
-                     }
+
+                       saveData('journals', editingJournal).catch(error => {
+                         console.error("Failed to save journal:", error);
+                       });
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูลวารสาร</button>
                 </div>
               </Modal>
@@ -2023,14 +2016,19 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={async () => { 
-                     try {
-                       await saveData('personnel', editingPersonnel);
+                   <button onClick={() => { 
                        const newStaffList = editingPersonnel.id.startsWith('new_') 
                          ? [...staff, editingPersonnel]
                          : staff.map(s => s.id === editingPersonnel.id ? editingPersonnel : s);
                        
                        setStaff(newStaffList);
+                       setEditingPersonnel(null);
+                       setSaveSuccess(true);
+                       setTimeout(() => setSaveSuccess(false), 2000);
+
+                       saveData('personnel', editingPersonnel).catch(error => {
+                         console.error("Failed to save personnel:", error);
+                       });
                        
                        // Sync with Director card on homepage if position matches
                        if (editingPersonnel.position === "ผู้อำนวยการโรงเรียน") {
@@ -2038,19 +2036,12 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                            ...config,
                            director: {
                              ...editingPersonnel,
-                             id: config.director.id // Preserve the director slot ID in config
+                             id: config.director?.id || 'dir1' // Preserve the director slot ID in config
                            }
                          };
-                         await saveData('config', newConfig);
                          setConfig(newConfig);
+                         saveData('config', newConfig).catch(e => console.error(e));
                        }
-                       
-                       setEditingPersonnel(null);
-                       setSaveSuccess(true);
-                       setTimeout(() => setSaveSuccess(false), 2000);
-                     } catch (error) {
-                       console.error("Failed to save personnel:", error);
-                     }
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
@@ -2064,11 +2055,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   <InputGroup label="วันที่" type="date" value={editingEvent.date || ''} onChange={v => setEditingEvent({ ...editingEvent, date: v })} showThaiDate />
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={async () => { 
-                     try {
-                       await saveData('events', editingEvent);
+                   <button onClick={() => { 
                        const newEventList = editingEvent.id.startsWith('new_') 
-                         ? [...events, editingEvent]
+                         ? [editingEvent, ...events]
                          : events.map(e => e.id === editingEvent.id ? editingEvent : e);
                        
                        // Sort by date descending
@@ -2078,9 +2067,10 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                        setEditingEvent(null);
                        setSaveSuccess(true);
                        setTimeout(() => setSaveSuccess(false), 2000);
-                     } catch (error) {
-                       console.error("Failed to save event:", error);
-                     }
+
+                       saveData('events', editingEvent).catch(error => {
+                         console.error("Failed to save event:", error);
+                       });
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
