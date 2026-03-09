@@ -94,16 +94,20 @@ const Footer: React.FC<FooterProps> = ({ config, adminUser }) => {
             </div>
           </div>
 
-          {/* Bottom Attribution Bar - Reduced top padding and border opacity */}
+        {/* Bottom Attribution Bar - Reduced top padding and border opacity */}
           <div className="w-full pt-6 border-t border-slate-900/50 flex flex-col items-center">
-            <div className="text-[10px] md:text-[11px] font-kanit tracking-[0.2em] uppercase font-bold" style={{ color: config.footerTextColor || '#475569' }}>
-              Power by : <span 
-                className="cursor-pointer transition-colors duration-300"
+            <div className="text-[10px] md:text-[11px] font-kanit tracking-[0.05em] uppercase font-bold text-center" style={{ color: config.footerTextColor || '#475569' }}>
+              Power By : <span 
+                className="cursor-pointer transition-colors duration-300 ml-1 hover:opacity-80"
                 style={{ color: config.secondaryColor || '#eab308' }}
                 onClick={() => setShowDevModal(true)}
               >
-                {devUser.name}
+                Mr.Ratchapol Worrakan
               </span>
+              <span className="mx-2 hidden md:inline opacity-50">|</span>
+              <span className="block md:inline mt-1 md:mt-0">โทร. 0815144041</span>
+              <span className="mx-2 hidden md:inline opacity-50">|</span>
+              <span className="block md:inline mt-1 md:mt-0">E-mail: kruunoi@gmail.com</span>
             </div>
             
             {/* Admin Link */}
