@@ -104,10 +104,6 @@ const Footer: React.FC<FooterProps> = ({ config, adminUser }) => {
               >
                 Mr.Ratchapol Worrakan
               </span>
-              <span className="mx-2 hidden md:inline opacity-50">|</span>
-              <span className="block md:inline mt-1 md:mt-0">โทร. 0815144041</span>
-              <span className="mx-2 hidden md:inline opacity-50">|</span>
-              <span className="block md:inline mt-1 md:mt-0">E-mail: kruunoi@gmail.com</span>
             </div>
             
             {/* Admin Link */}

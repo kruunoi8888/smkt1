@@ -479,10 +479,13 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
       } else if (type === 'menu') {
         setBufferedMenus(bufferedMenus.filter(m => m.id !== id));
       } else if (type === 'slide') {
-        setBufferedConfig({
+        const newConfig = {
           ...bufferedConfig,
-          slides: (bufferedConfig.slides || []).filter(s => s.id !== id)
-        });
+          slides: (bufferedConfig.slides || []).filter((s: any) => s.id !== id)
+        };
+        setBufferedConfig(newConfig);
+        setConfig(newConfig);
+        await saveData('config', { ...newConfig, id: 1 });
       } else if (type === 'grade_stat') {
         const newGradeStats = bufferedConfig.stats.gradeStats.filter(g => g.id !== id);
         const totalMale = newGradeStats.reduce((sum, g) => sum + g.male, 0);
@@ -1696,14 +1699,23 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   <InputGroup label="คำอธิบาย (Description)" value={editingSlide.description || ''} onChange={v => setEditingSlide({ ...editingSlide, description: v })} isTextArea />
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={() => { 
+                   <button onClick={async () => { 
                      const newSlides = editingSlide.id.startsWith('new_') 
-                       ? [...(config.slides || []), editingSlide]
-                       : (config.slides || []).map(s => s.id === editingSlide.id ? editingSlide : s);
-                     setConfig({ ...config, slides: newSlides });
-                     setEditingSlide(null);
-                     setSaveSuccess(true);
-                     setTimeout(() => setSaveSuccess(false), 2000);
+                       ? [editingSlide, ...(bufferedConfig.slides || [])]
+                       : (bufferedConfig.slides || []).map((s: any) => s.id === editingSlide.id ? editingSlide : s);
+                     
+                     const newConfig = { ...bufferedConfig, slides: newSlides };
+                     setBufferedConfig(newConfig);
+                     setConfig(newConfig);
+                     
+                     try {
+                       await saveData('config', { ...newConfig, id: 1 });
+                       setEditingSlide(null);
+                       setSaveSuccess(true);
+                       setTimeout(() => setSaveSuccess(false), 2000);
+                     } catch (error) {
+                       console.error("Failed to save slide:", error);
+                     }
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
@@ -1780,18 +1792,23 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                   </div>
                 </div>
                 <div className="mt-8 flex justify-end">
-                   <button onClick={() => { 
-                     const newNewsList = editingNews.id.startsWith('new_') 
-                       ? [...news, editingNews]
-                       : news.map(n => n.id === editingNews.id ? editingNews : n);
-                     
-                     // Sort by date descending
-                     newNewsList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                     
-                     setNews(newNewsList);
-                     setEditingNews(null);
-                     setSaveSuccess(true);
-                     setTimeout(() => setSaveSuccess(false), 2000);
+                   <button onClick={async () => { 
+                     try {
+                       await saveData('news', editingNews);
+                       const newNewsList = editingNews.id.startsWith('new_') 
+                         ? [...news, editingNews]
+                         : news.map((n: any) => n.id === editingNews.id ? editingNews : n);
+                       
+                       // Sort by date descending
+                       newNewsList.sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                       
+                       setNews(newNewsList);
+                       setEditingNews(null);
+                       setSaveSuccess(true);
+                       setTimeout(() => setSaveSuccess(false), 2000);
+                     } catch (error) {
+                       console.error("Failed to save news:", error);
+                     }
                    }} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-xl shadow-blue-500/20">บันทึกข้อมูล</button>
                 </div>
               </Modal>
