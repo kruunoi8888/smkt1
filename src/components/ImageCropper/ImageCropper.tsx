@@ -83,8 +83,32 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ imageSrc, onCropComplete, o
       Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
     );
 
-    // As Base64 string
-    return canvas.toDataURL('image/png');
+    // To prevent massive base64 strings that exceed Database payload limits:
+    let finalCanvas = canvas;
+    const MAX_WIDTH = 1920;
+    if (pixelCrop.width > MAX_WIDTH) {
+      const scale = MAX_WIDTH / pixelCrop.width;
+      const scaledCanvas = document.createElement('canvas');
+      scaledCanvas.width = MAX_WIDTH;
+      scaledCanvas.height = pixelCrop.height * scale;
+      const scaledCtx = scaledCanvas.getContext('2d');
+      if (scaledCtx) {
+        scaledCtx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+        finalCanvas = scaledCanvas;
+      }
+    }
+
+    // As Base64 string. Use WebP for good compression + transparency, fallback to jpeg.
+    let dataUrl = finalCanvas.toDataURL('image/webp', 0.7);
+    
+    // If the browser doesn't support WebP encoding, it falls back to PNG which is huge.
+    // We can do a check: if it fell back to PNG, let's try JPEG instead to save space, 
+    // though we might lose transparency for logos, it's safer for payload limits.
+    if (dataUrl.startsWith('data:image/png')) {
+      dataUrl = finalCanvas.toDataURL('image/jpeg', 0.8);
+    }
+    
+    return dataUrl;
   };
 
   const handleSave = async () => {

@@ -380,7 +380,7 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
     try {
       // Parallelize config, menus, and admin users updates
       const promises = [
-        saveData('config', bufferedConfig)
+        saveData('config', { ...bufferedConfig, id: 1 })
       ];
 
       // Save menus
@@ -402,9 +402,9 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
       setTimeout(() => {
         setSaveSuccess(false);
       }, 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to save config:", error);
-      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล\n\nรายละเอียด: " + (error?.message || error?.details || JSON.stringify(error)));
     } finally {
       setIsSaving(false);
     }
