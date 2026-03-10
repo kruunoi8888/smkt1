@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import Home from '@/pages/Home/Home';
 import Login from '@/pages/Login/Login';
 import AdminPortal from '@/pages/Admin/AdminPortal';
@@ -131,11 +131,25 @@ const AppRouter: React.FC<AppRouterProps> = (props) => {
           )
         } />
 
-        {/* Custom Pages */}
+        {/* Custom Pages and Static CMS pages */}
         <Route path="/page/:id" element={
           <CustomPageWrapper 
             config={config} menus={menus} isLoggedIn={isLoggedIn} 
             loggedInUser={loggedInUser} onLogout={handleLogout} 
+          />
+        } />
+        <Route path="/contact" element={
+          <CustomPageWrapper 
+            config={config} menus={menus} isLoggedIn={isLoggedIn} 
+            loggedInUser={loggedInUser} onLogout={handleLogout} 
+            pathOverride="#/contact"
+          />
+        } />
+        <Route path="/about" element={
+          <CustomPageWrapper 
+            config={config} menus={menus} isLoggedIn={isLoggedIn} 
+            loggedInUser={loggedInUser} onLogout={handleLogout} 
+            pathOverride="#/about"
           />
         } />
         
@@ -147,10 +161,12 @@ const AppRouter: React.FC<AppRouterProps> = (props) => {
 };
 
 // Helper to handle custom page logic
-import { useParams } from 'react-router-dom';
-const CustomPageWrapper: React.FC<any> = ({ config, menus, isLoggedIn, loggedInUser, onLogout }) => {
+const CustomPageWrapper: React.FC<any> = ({ config, menus, isLoggedIn, loggedInUser, onLogout, pathOverride }) => {
   const { id } = useParams();
-  const menuItem = menus.find((m: any) => m.id === id || m.path === `#/page/${id}`);
+  const menuItem = menus.find((m: any) => 
+    (pathOverride && m.path === pathOverride) || 
+    (id && (m.id === id || m.path === `#/page/${id}`))
+  );
   
   if (!menuItem) return <Navigate to="/" replace />;
   

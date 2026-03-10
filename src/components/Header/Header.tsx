@@ -44,7 +44,7 @@ const Header: React.FC<HeaderProps> = ({ config, menus, isLoggedIn, onLogout }) 
 
           {/* Desktop Menu */}
           <nav className="hidden lg:flex items-center gap-8">
-            {menus.filter(m => m.isActive).map(menu => {
+            {menus.filter(m => m.isActive !== false).map(menu => {
               const active = isActive(menu.path);
               return (
                 <a 
@@ -93,7 +93,7 @@ const Header: React.FC<HeaderProps> = ({ config, menus, isLoggedIn, onLogout }) 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
         <div className="lg:hidden absolute top-full left-4 right-4 mt-4 bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] py-6 flex flex-col px-6 gap-2 z-50 animate-in zoom-in-95 slide-in-from-top-4 duration-300 border border-slate-100">
-          {menus.filter(m => m.isActive).map(menu => {
+          {menus.filter(m => m.isActive !== false).map(menu => {
             const active = isActive(menu.path);
             return (
               <a 

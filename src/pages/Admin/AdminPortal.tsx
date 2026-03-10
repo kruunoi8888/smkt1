@@ -394,7 +394,8 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
     ];
 
     for (const menu of bufferedMenus) {
-      promises.push(saveData('menus', menu));
+      const { isActive, isDefault, ...dbMenu } = menu as any;
+      promises.push(saveData('menus', dbMenu));
     }
     
     for (const user of bufferedAdminUsers) {
@@ -2627,11 +2628,11 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                               </td>
                               <td className="p-6 text-center">
                                 <button 
-                                  disabled={isLocked && menu.label === 'หน้าแรก'}
+                                  disabled={isLocked && (menu.label === 'หน้าแรก' || menu.label === 'ติดต่อเรา')}
                                   onClick={() => {
                                     setBufferedMenus(bufferedMenus.map(m => m.id === menu.id ? { ...m, isActive: !m.isActive } : m));
                                   }}
-                                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${menu.isActive ? 'bg-emerald-500' : 'bg-slate-200'} ${(isLocked && menu.label === 'หน้าแรก') ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${menu.isActive ? 'bg-emerald-500' : 'bg-slate-200'} ${(isLocked && (menu.label === 'หน้าแรก' || menu.label === 'ติดต่อเรา')) ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                   <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${menu.isActive ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </button>
@@ -2640,14 +2641,21 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
                                 <div>
                                   <p className="font-bold text-slate-800 text-base">{menu.label}</p>
                                   <p className="text-xs text-slate-400">{menu.path}</p>
-                                  {isLocked && <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest mt-1 block">เมนูระบบ (ล็อกการลบ)</span>}
+                                  {isLocked && (menu.label === 'หน้าแรก' || menu.label === 'ติดต่อเรา') && <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest mt-1 block">เมนูระบบ (ล็อกการแก้ไขและลบ)</span>}
+                                  {isLocked && menu.label !== 'หน้าแรก' && menu.label !== 'ติดต่อเรา' && <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest mt-1 block">เมนูระบบ (ล็อกการลบ)</span>}
                                 </div>
                               </td>
                               <td className="p-6 text-right">
                                 <div className="flex justify-end gap-2">
-                                  <button onClick={() => setEditingMenu(menu)} className="w-9 h-9 flex items-center justify-center bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-800 hover:text-white transition-colors" title="แก้ไข">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.341.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
-                                  </button>
+                                  {!(isLocked && (menu.label === 'หน้าแรก' || menu.label === 'ติดต่อเรา')) ? (
+                                    <button onClick={() => setEditingMenu(menu)} className="w-9 h-9 flex items-center justify-center bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-800 hover:text-white transition-colors" title="แก้ไข">
+                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.341.886l-3.154 1.262a.5.5 0 01-.65-.65z" /><path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z" /></svg>
+                                    </button>
+                                  ) : (
+                                    <div className="w-9 h-9 flex items-center justify-center bg-slate-50 text-slate-300 rounded-lg cursor-not-allowed" title="เมนูนี้ถูกล็อกโดยระบบ ห้ามแก้ไข">
+                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" /></svg>
+                                    </div>
+                                  )}
                                   {!isLocked ? (
                                     <button onClick={() => setDeleteConfirm({ isOpen: true, type: 'menu', id: menu.id, title: menu.label })} className="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-colors" title="ลบ">
                                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75V4H5a2 2 0 00-2 2v.25a.75.75 0 00.75.75h12.5a.75.75 0 00.75-.75V6a2 2 0 00-2-2h-1v-.25A2.75 2.75 0 0011.25 1h-2.5zM8 4h4v-.25a1.25 1.25 0 00-1.25-1.25h-1.5A1.25 1.25 0 008 3.75V4zm1.25 4a.75.75 0 00-.75.75v6.5a.75.75 0 001.5 0v-6.5a.75.75 0 00-.75-.75zM12.75 8a.75.75 0 00-.75.75v6.5a.75.75 0 001.5 0v-6.5a.75.75 0 00-.75-.75z" clipRule="evenodd" /><path d="M4.318 8.5h11.364l-.557 8.355A2.75 2.75 0 0112.4 19.5H7.6a2.75 2.75 0 01-2.725-2.645L4.318 8.5z" /></svg>

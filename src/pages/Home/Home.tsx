@@ -117,11 +117,20 @@ const Home: React.FC<HomeViewProps> = ({
               <Calendar events={events} primaryColor={config.primaryColor} bodyTextColor={config.bodyTextColor} />
               
               <div className="p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-xl border-t-[8px] text-center flex flex-col items-center group transition-all duration-500 bg-white" style={{ borderTopColor: config.primaryColor || '#0f172a' }}>
-                <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-[8px] border-slate-50 shadow-inner mb-5">
-                  {config.director?.image ? <img src={config.director.image || null} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-300"><SolidIcons.Students /></div>}
+                <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-[8px] border-slate-50 shadow-inner mb-5 bg-slate-100 flex items-center justify-center">
+                  {config.director?.image && config.director.image !== "" ? 
+                    <img src={config.director.image} className="w-full h-full object-cover" alt="ผู้อำนวยการ" /> 
+                    : 
+                    <div className={`w-full h-full flex items-center justify-center ${config.director?.gender === 'female' ? 'text-rose-300' : 'text-blue-300'}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-16 h-16">
+                        <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  }
                 </div>
-                <h3 className="text-base font-bold font-kanit leading-tight mb-1" style={{ color: config.bodyTextColor || '#1e293b' }}>{config.director?.name}</h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: config.bodyTextColor || '#1e293b', opacity: 0.7 }}>{config.director?.position}</p>
+                <h3 className="text-xl md:text-2xl font-bold font-kanit leading-tight mb-2" style={{ color: config.bodyTextColor || '#1e293b' }}>{config.director?.name || 'ไม่มีข้อมูลผู้อำนวยการ'}</h3>
+                <p className="text-xs md:text-sm font-black uppercase tracking-[0.1em] text-blue-600 mb-1">{config.director?.position || 'ผู้อำนวยการโรงเรียน'}</p>
+                {config.director?.rank && <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60" style={{ color: config.bodyTextColor || '#1e293b' }}>{config.director.rank}</p>}
               </div>
 
               <PersonnelSection staff={staff} primaryColor={config.primaryColor} bodyTextColor={config.bodyTextColor} />

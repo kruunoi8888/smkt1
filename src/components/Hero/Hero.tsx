@@ -21,17 +21,18 @@ const Hero: React.FC<HeroProps> = ({ config }) => {
       <div className="container mx-auto px-6 h-full relative z-10 flex flex-col justify-center items-center text-center max-w-5xl">
         <div className="space-y-8 flex flex-col items-center">
           <h1 
-            className="text-4xl md:text-7xl font-black font-kanit leading-tight drop-shadow-2xl break-words tracking-tight"
+            className="text-5xl md:text-7xl lg:text-8xl font-black font-kanit leading-tight drop-shadow-[0_8px_8px_rgba(0,0,0,0.8)] break-words tracking-tighter"
             style={{ color: config.bannerTextColor || '#ffffff' }}
           >
             {config.name}
           </h1>
           <div 
-            className="inline-block px-6 py-3 text-sm md:text-lg font-black rounded-full uppercase tracking-widest shadow-lg transform transition-transform hover:scale-105 animate-pulse border-4"
+            className="inline-block px-8 py-4 md:px-10 md:py-5 text-xl md:text-2xl lg:text-3xl font-black rounded-full shadow-2xl transform transition-all duration-500 hover:scale-105 hover:-translate-y-1 border-4"
             style={{ 
               backgroundColor: config.secondaryColor || '#facc15',
               borderColor: config.sloganBorderColor || '#fbbf24',
-              color: config.sloganTextColor || '#0f172a'
+              color: config.sloganTextColor || '#0f172a',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.4)'
             }}
           >
             {config.bannerSlogan || "สร้างคนดี มีความรู้ คู่คุณธรรม นำเทคโนโลยี"}
