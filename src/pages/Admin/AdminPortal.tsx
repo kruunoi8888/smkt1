@@ -394,12 +394,19 @@ const AdminPortal: React.FC<AdminPortalProps> = ({
     ];
 
     for (const menu of bufferedMenus) {
-      const { isActive, isDefault, ...dbMenu } = menu as any;
+      const { isActive, isDefault, ...rest } = menu as any;
+      const dbMenu = {
+        ...rest,
+        isactive: isActive,
+        isdefault: isDefault
+      };
       promises.push(saveData('menus', dbMenu));
     }
     
     for (const user of bufferedAdminUsers) {
-      promises.push(saveData('admin_users', user));
+      const { isDefault, ...rest } = user as any;
+      const dbUser = { ...rest, isdefault: isDefault };
+      promises.push(saveData('admin_users', dbUser));
     }
 
     Promise.all(promises).catch((error: any) => {

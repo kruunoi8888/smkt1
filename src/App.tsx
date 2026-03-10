@@ -62,9 +62,20 @@ const App: React.FC = () => {
           return dateB - dateA;
         }));
       }
-      if (Array.isArray(menusData)) setMenus(menusData);
+      if (Array.isArray(menusData)) {
+        setMenus(menusData.map((m: any) => ({
+          ...m,
+          isActive: m.isactive !== undefined ? m.isactive : (m.isActive !== undefined ? m.isActive : true),
+          isDefault: m.isdefault !== undefined ? m.isdefault : m.isDefault
+        })));
+      }
       if (Array.isArray(eventsData)) setEvents(eventsData.sort((a, b) => b.date.localeCompare(a.date)));
-      if (Array.isArray(adminsData)) setAdminUsers(adminsData);
+      if (Array.isArray(adminsData)) {
+        setAdminUsers(adminsData.map((a: any) => ({
+          ...a,
+          isDefault: a.isdefault !== undefined ? a.isdefault : a.isDefault
+        })));
+      }
       
       if (authStatus.isLoggedIn) {
         setIsLoggedIn(true);

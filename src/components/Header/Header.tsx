@@ -43,29 +43,34 @@ const Header: React.FC<HeaderProps> = ({ config, menus, isLoggedIn, onLogout }) 
           </a>
 
           {/* Desktop Menu */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center p-1.5 bg-slate-50/80 backdrop-blur-md border border-slate-100 rounded-[2rem] shadow-sm ml-auto mr-4 xl:mr-8">
             {menus.filter(m => m.isActive !== false).map(menu => {
               const active = isActive(menu.path);
+              
+              // Determine text color based on primaryColor brightness
+              const hex = (config.primaryColor || '#0f172a').replace('#', '');
+              const r = parseInt(hex.substr(0, 2), 16) || 0;
+              const g = parseInt(hex.substr(2, 2), 16) || 0;
+              const b = parseInt(hex.substr(4, 2), 16) || 0;
+              const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+              const textColor = (yiq >= 200) ? '#0f172a' : '#ffffff'; // Use dark text if primary color is very light (like white)
+              const shadowOpacity = (yiq >= 200) ? '15' : '39'; // Reduce shadow if button is light
+              
               return (
                 <a 
                   key={menu.id} 
                   href={menu.path} 
-                  className={`text-[15px] font-bold transition-all font-kanit whitespace-nowrap relative group py-2 px-1 ${
-                    active ? 'text-slate-950' : 'text-slate-600 hover:text-slate-950'
+                  style={active ? { 
+                    backgroundColor: config.primaryColor, 
+                    color: textColor,
+                    boxShadow: `0 4px 14px 0 ${config.primaryColor}${shadowOpacity}`,
+                    border: yiq >= 240 ? '1px solid #e2e8f0' : 'none' // Add border if it's pure white
+                  } : {}}
+                  className={`text-[14px] xl:text-[15px] font-bold transition-all duration-300 font-kanit whitespace-nowrap px-5 xl:px-6 py-2.5 rounded-[1.5rem] ${
+                    active ? 'scale-105' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
                   }`}
                 >
                   {menu.label}
-                  {active ? (
-                    <span 
-                      className="absolute -bottom-1 left-0 w-full h-1 rounded-full shadow-sm"
-                      style={{ backgroundColor: config.primaryColor }}
-                    ></span>
-                  ) : (
-                    <span 
-                      className="absolute -bottom-1 left-0 w-0 h-1 rounded-full transition-all group-hover:w-full opacity-30"
-                      style={{ backgroundColor: config.primaryColor }}
-                    ></span>
-                  )}
                 </a>
               );
             })}
@@ -75,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ config, menus, isLoggedIn, onLogout }) 
         {/* Mobile Menu Toggle */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          className="lg:hidden w-11 h-11 flex items-center justify-center text-slate-600 bg-slate-50 rounded-2xl active:bg-slate-100 transition-colors"
+          className="lg:hidden w-11 h-11 flex items-center justify-center text-slate-600 bg-slate-50 rounded-2xl active:bg-slate-100 transition-colors shrink-0"
           aria-label="Toggle Menu"
         >
           {isMenuOpen ? (
@@ -92,25 +97,35 @@ const Header: React.FC<HeaderProps> = ({ config, menus, isLoggedIn, onLogout }) 
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-4 right-4 mt-4 bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] py-6 flex flex-col px-6 gap-2 z-50 animate-in zoom-in-95 slide-in-from-top-4 duration-300 border border-slate-100">
+        <div className="lg:hidden absolute top-full left-4 right-4 mt-4 bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] py-6 flex flex-col px-6 gap-2 z-50 animate-in zoom-in-95 slide-in-from-top-4 duration-300 border border-slate-100">
           {menus.filter(m => m.isActive !== false).map(menu => {
             const active = isActive(menu.path);
+            
+            // Determine text color based on primaryColor brightness
+            const hex = (config.primaryColor || '#0f172a').replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16) || 0;
+            const g = parseInt(hex.substr(2, 2), 16) || 0;
+            const b = parseInt(hex.substr(4, 2), 16) || 0;
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            const textColor = (yiq >= 200) ? '#0f172a' : '#ffffff';
+            const shadowOpacity = (yiq >= 200) ? '15' : '39';
+            
             return (
               <a 
                 key={menu.id} 
                 href={menu.path} 
                 onClick={() => setIsMenuOpen(false)}
-                className={`text-base font-bold font-kanit py-3.5 px-5 rounded-2xl transition-all flex items-center justify-between ${
-                  active ? 'bg-slate-50 text-slate-950' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-950'
+                style={active ? { 
+                  backgroundColor: config.primaryColor, 
+                  color: textColor,
+                  boxShadow: `0 4px 14px 0 ${config.primaryColor}${shadowOpacity}`,
+                  border: yiq >= 240 ? '1px solid #e2e8f0' : 'none'
+                } : {}}
+                className={`text-base font-bold font-kanit py-3.5 px-6 rounded-2xl transition-all duration-300 flex items-center justify-between ${
+                  active ? 'scale-[1.02]' : 'text-slate-700 hover:bg-slate-100 hover:text-slate-950 hover:scale-[1.02]'
                 }`}
               >
                 {menu.label}
-                {active && (
-                  <span 
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: config.primaryColor }}
-                  ></span>
-                )}
               </a>
             );
           })}

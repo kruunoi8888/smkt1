@@ -163,17 +163,37 @@ const AppRouter: React.FC<AppRouterProps> = (props) => {
 // Helper to handle custom page logic
 const CustomPageWrapper: React.FC<any> = ({ config, menus, isLoggedIn, loggedInUser, onLogout, pathOverride }) => {
   const { id } = useParams();
-  const menuItem = menus.find((m: any) => 
-    (pathOverride && m.path === pathOverride) || 
-    (id && (m.id === id || m.path === `#/page/${id}`))
+  
+  const normalizePath = (p?: string) => (p || '').replace(/^\/?#\//, '#/');
+  const targetPath = normalizePath(pathOverride);
+  const targetIdPath = id ? `#/page/${id}` : null;
+
+  let menuItem = menus.find((m: any) => 
+    (targetPath && normalizePath(m.path) === targetPath) || 
+    (id && (m.id === id || normalizePath(m.path) === targetIdPath)) ||
+    (targetPath === '#/contact' && m.label && m.label.includes('ติดต่อ')) ||
+    (targetPath === '#/about' && m.label && m.label.includes('เกี่ยว'))
   );
   
-  if (!menuItem) return <Navigate to="/" replace />;
+  // Fallback if the user deleted the default menu item but still uses a shortcut
+  if (!menuItem) {
+    if (pathOverride === '#/about') {
+      menuItem = { id: 'about-fallback', label: 'เกี่ยวกับโรงเรียน', path: '#/about', type: 'link' };
+    } else if (pathOverride === '#/contact') {
+      menuItem = { id: 'contact-fallback', label: 'ติดต่อเรา', path: '#/contact', type: 'link' };
+    } else {
+      return <Navigate to="/" replace />;
+    }
+  }
   
   return (
     <CustomPage 
-      menuItem={menuItem} config={config} menus={menus}
-      isLoggedIn={isLoggedIn} loggedInUser={loggedInUser} onLogout={onLogout}
+      menuItem={menuItem} 
+      config={config} 
+      menus={menus}
+      isLoggedIn={isLoggedIn} 
+      loggedInUser={loggedInUser} 
+      onLogout={onLogout}
     />
   );
 };
